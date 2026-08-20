@@ -1,0 +1,1478 @@
+:root {
+  --azul-hondo: #0b3d5c;
+  --azul-medio: #1a6fa8;
+  --celeste: #6fc3e0;
+  --arena: #f4f1ea;
+  --naranja: #e08a3e;
+  --rojo-deuda: #c0392b;
+  --verde-pago: #2e8b57;
+  --texto: #12303f;
+  --tarjeta-fondo: white;
+}
+body.oscuro {
+  --arena: #14232f;
+  --texto: #e8eef2;
+  --tarjeta-fondo: #1e3646;
+}
+body.oscuro .card,
+body.oscuro .modal,
+body.oscuro .stepper input,
+body.oscuro input,
+body.oscuro select,
+body.oscuro textarea {
+  background: var(--tarjeta-fondo);
+  color: var(--texto);
+  border-color: #2c4a5c;
+}
+body.oscuro .tipo-bidon-box,
+body.oscuro .preview-box,
+body.oscuro .dia-chip {
+  background: #223b4a;
+}
+body.oscuro .mov-item {
+  border-bottom-color: #2c4a5c;
+}
+body.oscuro #historialStock {
+  background: var(--tarjeta-fondo);
+}
+* { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--arena);
+  color: var(--texto);
+  padding-bottom: 90px;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+}
+/* Asegurar que las pantallas scrolleen bien en mobile */
+#pantallaLogin {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+#appContainer {
+  min-height: 100vh;
+}
+.view {
+  -webkit-overflow-scrolling: touch;
+}
+.modal {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.modal input:focus {
+  scroll-margin-bottom: 100px;
+}
+header {
+  background: linear-gradient(135deg, var(--azul-hondo), var(--azul-medio));
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 8px;
+}
+.topbar .icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  padding: 10px;
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 10px 12px;
+}
+.tab-btn {
+  flex: 1;
+  max-width: 160px;
+  padding: 10px 4px;
+  text-align: center;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88em;
+  color: white;
+  opacity: 0.9;
+}
+.tab-btn.active {
+  background: var(--naranja);
+  opacity: 1;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.view { display: none; padding: 14px; }
+.view.active { display: block; }
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border-left: 5px solid #ddd;
+}
+.card.tiene-deuda { border-left-color: #c0392b; }
+.card.al-dia { border-left-color: #2e8b57; }
+.card h3 { margin: 0 0 6px; font-size: 1.05em; }
+.row { display: flex; justify-content: space-between; font-size: 0.9em; margin: 2px 0; }
+.deuda { color: var(--rojo-deuda); font-weight: bold; }
+.saldo-ok { color: var(--verde-pago); font-weight: bold; }
+.btn {
+  background: var(--azul-medio);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.95em;
+  width: 100%;
+  margin-top: 8px;
+}
+.btn.naranja { background: var(--naranja); }
+.btn.verde { background: var(--verde-pago); }
+.btn.chico { width: auto; padding: 6px 10px; font-size: 0.78em; }
+.btn.rojo { background: var(--rojo-deuda); }
+.btn.outline { background: white; color: var(--azul-medio); border: 1px solid var(--azul-medio); }
+.btn-row { display: flex; gap: 6px; margin-top: 8px; }
+.btn-row .btn { margin-top: 0; flex: 1; font-size: 0.78em; padding: 8px 4px; }
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95em;
+}
+label { font-size: 0.8em; color: var(--texto); opacity: 0.8; font-weight: 600; }
+.section-title {
+  background: var(--azul-medio);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8em;
+  letter-spacing: 0.5px;
+  margin: 14px 0 8px;
+  text-transform: uppercase;
+}
+.movimientos { max-height: 200px; overflow-y: auto; }
+.mov-item { font-size: 0.82em; padding: 6px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; gap: 8px; }
+.empty-msg { text-align: center; color: var(--texto); opacity: 0.55; padding: 30px 10px; font-size: 0.9em; }
+.fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: var(--naranja);
+  color: white;
+  border: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 1.6em;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  z-index: 30;
+}
+.footer-stats {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--azul-medio);
+  color: white;
+  padding: 10px 16px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  z-index: 20;
+}
+.footer-stats div { text-align: center; }
+.footer-stats strong { display: block; font-size: 1.05em; }
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 50;
+  align-items: flex-end;
+}
+.modal-bg.active { display: flex; }
+.modal {
+  background: white;
+  width: 100%;
+  border-radius: 18px 18px 0 0;
+  padding: 20px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.modal h2 { margin-top: 0; font-size: 1.1em; }
+.close-x { float: right; background: none; border: none; font-size: 1.5em; color: var(--texto); opacity: 0.5; padding: 10px 14px; }
+.dia-selector { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.dia-chip {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--arena);
+  color: var(--texto);
+  font-size: 0.75em;
+  border: 1px solid var(--celeste);
+}
+.dia-chip.activo { 
+  background: var(--azul-medio) !important; 
+  color: white !important; 
+  border-color: var(--azul-medio) !important;
+}
+body.oscuro .dia-chip {
+  background: #223b4a;
+  border-color: #2c4a5c;
+  color: #e8eef2;
+}
+body.oscuro .dia-chip.activo {
+  background: #e08a3e !important;
+  color: white !important;
+  border-color: #e08a3e !important;
+}
+.preview-box {
+  background: var(--arena);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  text-align: center;
+  font-size: 1.05em;
+}
+
+/* =====================================================
+   MODAL STOCK - DISEÑO COMPACTO
+   ===================================================== */
+
+.tipos-bidon {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+
+.tipo-bidon-box {
+  width: 100%;
+  background: var(--arena);
+  border-radius: 14px;
+  padding: 6px 8px 8px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.tipo-bidon-label {
+  display: block;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--texto);
+  margin-bottom: 5px;
+}
+
+
+/* =====================================================
+   STEPPER COMPACTO
+   ===================================================== */
+
+.stepper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  box-sizing: border-box;
+}
+
+.btn-cantidad {
+  width: 56px;
+  min-width: 56px;
+  height: 54px;
+
+  background: white;
+  color: var(--azul-medio);
+
+  border: 2px solid #75a9c5;
+  border-radius: 13px;
+
+  font-size: 1.55em;
+  font-weight: 400;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  flex-shrink: 0;
+}
+
+.btn-cantidad:active {
+  transform: scale(0.96);
+  background: #f0f7fa;
+}
+
+.stepper input {
+  flex: 1;
+
+  width: 100%;
+  height: 48px;
+
+  margin: 0;
+  padding: 5px;
+
+  text-align: center;
+
+  background: white;
+  color: #8b9499;
+
+  border: 1px solid #d2d2d2;
+  border-radius: 12px;
+
+  font-size: 1.35em;
+  font-weight: 600;
+
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   ENVASES RECIBIDOS
+   ===================================================== */
+
+.envases-titulo {
+  display: block;
+  text-align: center;
+
+  font-size: 0.95em;
+  font-weight: 700;
+
+  margin: 8px 0 5px;
+}
+
+.envases-recibidos {
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+
+/* =====================================================
+   TOTAL
+   ===================================================== */
+
+.total-venta {
+  text-align: center;
+
+  font-size: 1.15em;
+
+  margin: 7px 0 10px;
+
+  color: var(--texto);
+}
+
+.total-venta strong {
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   BOTONES DE PAGO
+   ===================================================== */
+
+.botones-pago {
+  display: flex;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.botones-pago .btn {
+  min-height: 48px;
+
+  margin: 0;
+
+  border-radius: 13px;
+
+  font-size: 0.9em;
+  font-weight: 600;
+
+  padding: 7px 5px;
+}
+
+.btn-efectivo {
+  background: #27ae60 !important;
+}
+
+.btn-transferencia {
+  background: #2479b5 !important;
+}
+
+
+/* =====================================================
+   TRANSFERENCIA PENDIENTE
+   ===================================================== */
+
+.btn-transferencia-pendiente {
+  min-height: 48px;
+
+  margin-top: 6px !important;
+
+  background: white !important;
+  color: #2479b5 !important;
+
+  border: 2px solid #75a9c5 !important;
+
+  border-radius: 13px !important;
+
+  font-size: 0.9em !important;
+}
+
+
+/* =====================================================
+   ENTREGA DE DINERO
+   ===================================================== */
+
+.entrega-titulo {
+  display: block;
+
+  text-align: center;
+
+  font-size: 0.9em;
+
+  margin-top: 7px;
+  margin-bottom: 4px;
+}
+
+.input-venta-grande {
+  width: 100%;
+  height: 50px;
+
+  margin: 0 0 7px;
+
+  padding: 7px 14px;
+
+  background: white;
+
+  border: 1px solid #d4d4d4;
+  border-radius: 13px;
+
+  font-size: 1em;
+
+  color: var(--texto);
+
+  box-sizing: border-box;
+}
+
+.input-venta-grande::placeholder {
+  color: #8b9499;
+  opacity: 0.7;
+}
+
+
+/* =====================================================
+   BOTÓN REGISTRAR
+   ===================================================== */
+
+.btn-registrar {
+  min-height: 50px;
+
+  background: var(--naranja) !important;
+
+  border-radius: 13px !important;
+
+  font-size: 1em !important;
+
+  margin-top: 2px !important;
+}
+
+
+/* =====================================================
+   MODAL DE VENTA / STOCK
+   ===================================================== */
+
+.modal-venta {
+  background: white;
+
+  /*
+     IMPORTANTE:
+     El modal padre ya tiene padding.
+     Reducimos este para evitar doble espacio.
+  */
+  padding: 8px 14px 12px;
+
+  max-height: 100vh;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+}
+
+.modal-venta h2 {
+  font-size: 1.05em;
+
+  margin: 0 0 8px;
+
+  color: var(--texto);
+}
+
+.dato-venta {
+  font-size: 0.9em;
+
+  margin: 2px 0;
+}
+
+.dato-venta strong {
+  font-size: 1em;
+}
+
+.modal-venta hr {
+  border: none;
+
+  border-top: 2px solid #d0d0d0;
+
+  margin: 7px 0 9px;
+}
+
+.titulo-venta {
+  display: block;
+
+  font-size: 0.92em;
+
+  font-weight: 700;
+
+  color: var(--texto);
+
+  opacity: 0.8;
+
+  margin: 7px 0 5px;
+}
+
+
+/* =====================================================
+   AJUSTE PARA CELULARES
+   ===================================================== */
+
+@media (max-width: 500px) {
+
+  .modal-venta {
+    padding: 7px 14px 10px;
+  }
+
+  .tipos-bidon {
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .tipo-bidon-box {
+    padding: 5px 7px 7px;
+    border-radius: 13px;
+  }
+
+  .tipo-bidon-label {
+    font-size: 0.9em;
+    margin-bottom: 4px;
+  }
+
+  .btn-cantidad {
+    width: 54px;
+    min-width: 54px;
+    height: 52px;
+
+    font-size: 1.5em;
+  }
+
+  .stepper input {
+    height: 46px;
+    font-size: 1.3em;
+  }
+
+  .envases-titulo {
+    margin-top: 7px;
+    margin-bottom: 4px;
+  }
+
+  .total-venta {
+    font-size: 1.1em;
+    margin: 6px 0 8px;
+  }
+
+  .botones-pago .btn {
+    min-height: 46px;
+  }
+
+  .btn-transferencia-pendiente {
+    min-height: 46px;
+  }
+
+  .input-venta-grande {
+    height: 48px;
+  }
+
+  .btn-registrar {
+    min-height: 50px;
+  }
+}
+.visitado-tag {
+  display: inline-block;
+  background: var(--verde-pago);
+  color: white;
+  font-size: 0.7em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+/* Panel desplegable de busqueda */
+.panel-desplegable {
+  display: none;
+  background: var(--azul-medio);
+  padding: 10px 12px 14px;
+}
+.panel-desplegable.activo { display: block; }
+.filtro-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.filtro-tab {
+  flex: 1;
+  padding: 8px 4px;
+  background: transparent;
+  border: 1px solid white;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8em;
+}
+.filtro-tab.activo { background: var(--azul-hondo); }
+.panel-desplegable input {
+  background: white;
+  margin: 0;
+}
+/* Menu hamburguesa */
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 54px;
+  left: 8px;
+  background: #14232f;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  z-index: 30;
+  min-width: 210px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.menu-dropdown.activo { display: block; }
+.menu-dropdown button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 13px 16px;
+  font-size: 0.9em;
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.menu-dropdown button:active {
+  background: rgba(255,255,255,0.08);
+}
+/* Selector de dia desplegable */
+.dia-dropdown {
+  display: none;
+  position: absolute;
+  top: 54px;
+  right: 60px;
+  background: var(--tarjeta-fondo);
+  color: var(--texto);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  z-index: 30;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.dia-dropdown.activo { display: block; }
+.dia-dropdown .dia-chip { color: var(--texto); background: var(--arena); }
+.dia-dropdown label { color: var(--texto); }
+/* Estadisticas */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.stat-box {
+  border-radius: 12px;
+  padding: 16px 8px;
+  text-align: center;
+  color: white;
+  font-size: 0.85em;
+}
+.stat-box .num { font-size: 1.3em; font-weight: bold; display: block; margin-bottom: 4px; }
+.banner-deshacer {
+  display: none;
+  position: fixed;
+  bottom: 75px; left: 12px; right: 12px;
+  background: var(--azul-hondo);
+  color: white;
+  border-radius: 10px;
+  padding: 12px 14px;
+  z-index: 40;
+  align-items: center;
+  justify-content: space-between;
+}
+.banner-deshacer.activo { display: flex; }
+.banner-deshacer button {
+  background: var(--naranja);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85em;
+}
+
+#btnInstalarApp {
+  z-index: 50;
+  bottom: 140px;
+}
+
+/* Botón de venta rápida */
+.btn-venta-rapida {
+  background: var(--verde-pago);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.82em;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Indicador de sincronización */
+.sync-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff9800;
+}
+.sync-badge.ok {
+  background: #4caf50;
+}
+
+/* Help bot */
+
+.help-panel {
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  left: auto;
+  bottom: auto;
+  width: calc(100% - 20px);
+  max-width: 360px;
+  max-height: 400px;
+  background: var(--tarjeta-fondo);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 55;
+  display: none;
+  flex-direction: column;
+}
+.help-panel.active {
+  display: flex;
+}
+.help-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.help-message {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  font-size: 0.88em;
+}
+.help-message.bot {
+  background: var(--arena);
+  align-self: flex-start;
+}
+.help-message.user {
+  background: var(--azul-medio);
+  color: white;
+  align-self: flex-end;
+}
+.help-input-row {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+}
+.help-input-row input {
+  flex: 1;
+}
+
+
+/* ===== TOAST NOTIFICATIONS ===== */
+#toastContainer {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== SYNC BADGE ===== */
+.sync-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #e74c3c;
+  color: white;
+  font-size: 0.6em;
+  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  padding: 0 3px;
+}
+
+/* ===== CORREGIR PRECIO ===== */
+#modalCorregirPrecio input[type="radio"],
+#modalCorregirPrecio input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+/* ===== BOTÓN VENTA RÁPIDA ===== */
+.btn.verde {
+  background: #27ae60;
+  color: white;
+  border: none;
+}
+.btn.verde:hover {
+  background: #229954;
+}
+
+/* FIX: Cerrar modales al tocar afuera */
+.modal-bg { cursor: pointer; }
+.modal-bg > .modal { cursor: auto; }
+
+/* FIX: Botones táctiles más grandes (44px mínimo) */
+.topbar button, .footer-stats button, .card button, .btn-chico,
+.btn.chico, .fab, 
+
+/* FIX: Safe areas iPhone/Android */
+.topbar {
+  padding-top: max(10px, env(safe-area-inset-top));
+}
+.footer-stats {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+
+/* FIX: Stepper no colapsa en pantallas chicas */
+@media (max-width: 360px) {
+  .stepper {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .stepper button {
+    min-width: 40px;
+    font-size: 1.1em;
+  }
+}
+
+/* FIX: Contraste mejorado */
+.card-row span:first-child {
+  color: var(--texto) !important;
+  opacity: 0.65;
+}
+.texto-secundario, .nota-chica {
+  color: var(--texto) !important;
+  opacity: 0.65;
+}
+
+/* FIX: Scroll en modales cuando teclado aparece */
+.modal {
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* FIX: placeholders visibles en ambos temas */
+input::placeholder, textarea::placeholder {
+  color: var(--texto);
+  opacity: 0.45;
+}
+
+/* ---------- LOGIN: tarjeta de vidrio (glassmorphism) ---------- */
+.login-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(111,195,224,0.35), rgba(111,195,224,0.03));
+  filter: blur(1px);
+  pointer-events: none;
+}
+.login-glass {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 28px;
+  padding: 34px 26px 24px;
+  box-sizing: border-box;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  text-align: center;
+}
+.login-icon-badge {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  background: var(--azul-hondo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+}
+.login-titulo {
+  font-size: 2em;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: white;
+  margin-bottom: 4px;
+}
+.login-titulo span { color: #6fc3e0; }
+.login-subtitulo {
+  font-size: 0.85em;
+  color: #a9d4ea;
+  margin-bottom: 26px;
+  letter-spacing: 0.3px;
+}
+.login-label {
+  display: block;
+  text-align: left;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #e4f2fa;
+  opacity: 1;
+  margin: 0 0 6px;
+}
+.login-input-wrap { position: relative; margin-bottom: 16px; }
+.login-input-wrap .login-input {
+  width: 100%;
+  padding: 13px 14px 13px 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.92);
+  color: #12303f;
+  font-size: 0.95em;
+  margin: 0;
+  box-sizing: border-box;
+}
+.login-input-wrap .login-input::placeholder { color: #90a4ae; opacity: 1; }
+.login-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1em;
+  opacity: 0.8;
+}
+.login-toggle-eye {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05em;
+  padding: 4px 6px;
+  line-height: 1;
+}
+.login-fila-opciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 18px;
+  font-size: 0.8em;
+}
+.login-check-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e4f2fa;
+  font-weight: 500;
+  cursor: pointer;
+}
+.login-check-label input[type="checkbox"] {
+  width: 15px; height: 15px; margin: 0; accent-color: var(--naranja);
+}
+.login-link-chico {
+  color: #bfe4f5;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.login-btn-ingresar {
+  width: 100%;
+  margin-top: 4px;
+  padding: 15px;
+  font-size: 1.05em;
+  font-weight: 800;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(224,138,62,0.4);
+}
+.login-terminos {
+  font-size: 0.72em;
+  color: #cfe3ee;
+  text-align: center;
+  margin-top: 16px;
+}
+.login-terminos a { color: white; text-decoration: underline; }
+
+
+/* =====================================================
+   HISTORIAL DE CLIENTES - CONTRASTE EN MODO OSCURO
+   ===================================================== */
+body.oscuro .mov-item {
+  color: var(--texto) !important;
+  border-bottom-color: #2c4a5c !important;
+}
+body.oscuro .mov-item > span:first-child {
+  color: #f1f5f7 !important;
+  opacity: 1 !important;
+}
+body.oscuro .mov-item > span:last-child,
+body.oscuro .mov-item > span:last-child > span {
+  color: #c9d5dc !important;
+}
+body.oscuro .mov-item .btn.outline {
+  background: #223b4a !important;
+  color: #8fd5ef !important;
+  border-color: #4f7890 !important;
+}
+body.oscuro #historialStock {
+  background: var(--tarjeta-fondo) !important;
+  border-color: #2c4a5c !important;
+}
+body.oscuro #historialStock .mov-item > span:first-child {
+  color: #f1f5f7 !important;
+}
+body.oscuro #historialStock .mov-item > span:last-child,
+body.oscuro #historialStock .mov-item > span:last-child > span {
+  color: #c9d5dc !important;
+}
+
+/* =====================================================
+   CIERRE PROFESIONAL DEL REPARTO
+   ===================================================== */
+.modal-cierre-reparto {
+  padding: 18px;
+}
+.cierre-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dce5ea;
+}
+.cierre-icono {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--naranja);
+  color: white;
+  font-size: 1.35em;
+  flex: 0 0 44px;
+}
+.cierre-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+}
+.cierre-header p {
+  margin: 3px 0 0;
+  font-size: 0.8em;
+  opacity: 0.68;
+}
+.cierre-seccion {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 13px;
+  background: #f5f7f8;
+  border: 1px solid #e0e7eb;
+}
+.cierre-seccion-titulo {
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+.cierre-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+.cierre-dato {
+  background: white;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e4e9ec;
+}
+.cierre-dato span {
+  display: block;
+  font-size: 0.72em;
+  opacity: 0.68;
+}
+.cierre-dato strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 1em;
+}
+.cierre-linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  font-size: 0.86em;
+}
+.cierre-linea:last-child {
+  border-bottom: none;
+}
+.cierre-sobrante {
+  margin-top: 3px;
+  font-weight: 700;
+}
+.cierre-aviso {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: rgba(224,138,62,0.12);
+  border: 1px solid rgba(224,138,62,0.35);
+}
+.cierre-aviso strong,
+.cierre-aviso span {
+  display: block;
+}
+.cierre-aviso strong {
+  margin-bottom: 4px;
+}
+.cierre-aviso span {
+  font-size: 0.78em;
+  line-height: 1.4;
+  opacity: 0.78;
+}
+.cierre-botones {
+  margin-top: 12px;
+}
+.cierre-botones .btn {
+  margin-top: 0;
+}
+
+/* =====================================================
+   TARJETAS DE CLIENTES DESPUÉS DEL CIERRE
+   ===================================================== */
+.cliente-cierre-actions {
+  align-items: stretch;
+}
+.cliente-cierre-actions .btn,
+.cliente-maps-btn {
+  margin-top: 4px !important;
+  text-decoration: none;
+  text-align: center;
+}
+.cliente-cierre-dias {
+  margin-top: 7px;
+  font-size: 0.74em;
+  opacity: 0.62;
+}
+body.oscuro .cierre-header {
+  border-bottom-color: #2c4a5c;
+}
+body.oscuro .cierre-seccion {
+  background: #182d3b;
+  border-color: #2c4a5c;
+}
+body.oscuro .cierre-dato {
+  background: #223b4a;
+  border-color: #365568;
+}
+body.oscuro .cierre-linea {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+body.oscuro .cierre-aviso {
+  background: rgba(224,138,62,0.14);
+  border-color: rgba(224,138,62,0.38);
+}
+
+/* Aviso profesional de reparto anterior sin cerrar */
+.modal-aviso-reparto {
+  max-width: 430px;
+  text-align: center;
+  padding: 24px 22px 20px;
+}
+.aviso-reparto-icono {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  background: rgba(243, 156, 18, .14);
+}
+.modal-aviso-reparto h2 {
+  margin: 4px 0 8px;
+  font-size: 1.2em;
+}
+.modal-aviso-reparto > p {
+  margin: 7px 0;
+  line-height: 1.45;
+}
+.aviso-reparto-fecha {
+  font-size: .95em;
+}
+.aviso-reparto-nota {
+  margin-top: 14px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  text-align: left;
+  background: rgba(243, 156, 18, .10);
+  border: 1px solid rgba(243, 156, 18, .28);
+}
+.aviso-reparto-nota strong, .aviso-reparto-nota span {
+  display: block;
+}
+.aviso-reparto-nota span {
+  margin-top: 4px;
+  font-size: .88em;
+  line-height: 1.4;
+}
+
+/* Corregir precio por día */
+.precio-correccion-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:9px 0;background:rgba(255,255,255,.035)}
+.precio-actual-general{font-size:.78em;opacity:.72;margin-top:4px}
+.precio-input-wrap{display:flex;align-items:center;min-width:145px;border:1px solid rgba(33,150,243,.55);border-radius:9px;overflow:hidden}
+.precio-input-wrap span{padding:0 9px;opacity:.8}
+.precio-input-wrap input{width:105px;border:0!important;margin:0!important;background:transparent!important}
+.dia-chip{border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);padding:8px 13px;border-radius:9px;cursor:pointer;font-weight:600}
+.dia-chip.activo{background:#1976d2;color:white;border-color:#1976d2}
+@media(max-width:520px){.precio-correccion-card{align-items:flex-start;flex-direction:column}.precio-input-wrap{width:100%}.precio-input-wrap input{flex:1;width:auto}}
+
+/* ---------- PAGO DE DEUDA ANTERIOR EN STOCK ---------- */
+.pago-deuda-card{
+  margin:18px 0 16px;
+  padding:16px;
+  border:1px solid rgba(11,61,92,.16);
+  border-radius:18px;
+  background:linear-gradient(180deg,#f8fbfd,#eef6f9);
+  box-shadow:0 4px 14px rgba(11,61,92,.07);
+}
+.pago-deuda-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  color:var(--texto);
+}
+.pago-deuda-header strong{font-size:1rem;}
+.pago-deuda-header small{display:block;margin-top:4px;color:#687780;font-size:.78rem;line-height:1.35;}
+.pago-deuda-input{margin:8px 0 6px;}
+.pago-deuda-preview{
+  min-height:20px;
+  margin:5px 2px 10px;
+  font-size:.82rem;
+  font-weight:700;
+  color:var(--verde-pago);
+}
+.pago-deuda-preview.error{color:var(--rojo-deuda);}
+.pago-deuda-botones{margin-top:4px;}
+.pago-deuda-botones .btn{flex:1;}
+
+/* ---------- CONFIRMACIONES PROFESIONALES ---------- */
+.modal-confirmacion-app{text-align:center;max-width:420px;}
+.confirmacion-icono{font-size:2.2rem;margin-bottom:6px;}
+.modal-confirmacion-app h2{margin:6px 0 10px;}
+.modal-confirmacion-app p{color:#52636d;line-height:1.5;margin:0 0 18px;white-space:normal;}
+.modal-confirmacion-app .btn-row{justify-content:center;}
+.modal-confirmacion-app .btn{flex:1;}
+
+
+/* Ubicación profesional del nuevo cliente en la ruta */
+.orden-ruta-ayuda{font-size:.84em;line-height:1.45;color:#667782;background:rgba(33,150,243,.07);border:1px solid rgba(33,150,243,.18);padding:11px 12px;border-radius:12px;margin:8px 0 14px}
+.orden-ruta-vacio{padding:12px;border-radius:12px;background:rgba(0,0,0,.035);color:#777;font-size:.86em}
+.orden-ruta-dia{background:var(--arena);border-radius:14px;padding:12px;margin:10px 0;border:1px solid rgba(11,61,92,.10)}
+.orden-ruta-dia label{display:block;margin-bottom:7px;font-weight:700;color:var(--texto)}
+.input-busqueda-ruta{width:100%;box-sizing:border-box;margin:0 0 8px!important;padding:11px 12px!important;border-radius:10px!important;border:1px solid rgba(11,61,92,.18)!important;background:white!important}
+.orden-ruta-dia select{width:100%;box-sizing:border-box;margin:0!important;padding:11px 10px!important;border-radius:10px!important}
+.orden-ruta-hint{font-size:.76em;color:#687780;margin-top:7px;line-height:1.35}
+body.oscuro .orden-ruta-dia{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.10)}
+body.oscuro .orden-ruta-ayuda{color:#c5d2d8;background:rgba(111,195,224,.08)}
+body.oscuro .orden-ruta-vacio{background:rgba(255,255,255,.04);color:#aab6bb}
+body.oscuro .input-busqueda-ruta{background:#102a38!important;color:#fff!important;border-color:rgba(255,255,255,.16)!important}
+
+
+/* =====================================================
+   STOCK / VENTA UNIFICADA - DISEÑO TÁCTIL
+   ===================================================== */
+.modal-stock-unificado{padding:10px 12px 14px;max-width:560px}
+.stock-cliente-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.stock-cliente-header h2{font-size:1.12rem!important;margin:0!important}
+.stock-cliente-sub{font-size:.8rem;color:#60727c;margin-top:3px}
+.stock-historial-btn{white-space:nowrap;min-height:42px}
+.stock-resumen-principal{display:grid;grid-template-columns:1fr 20px 1fr 20px 1.12fr;align-items:center;gap:4px;margin:6px 0 7px}
+.stock-resumen-box{border-radius:12px;padding:8px 5px;text-align:center;border:1px solid #d9e3e8;min-width:0}
+.stock-resumen-box span{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.2px}
+.stock-resumen-box strong{display:block;font-size:1.03rem;margin-top:3px}
+.stock-resumen-box.deuda{background:#fff5f4;color:#c0392b}
+.stock-resumen-box.compra{background:#f2f8fd;color:#1766a2}
+.stock-resumen-box.total{background:#fff8ed;color:#c66a16;border-color:#f0d6b2}
+.stock-resumen-signo{text-align:center;font-size:1.15rem;font-weight:800;color:#5c4632}
+.stock-envase-resumen{font-size:.76rem;color:#60727c;background:#f5f8fa;border-radius:9px;padding:6px 9px;margin-bottom:8px}
+.stock-seccion{border:1px solid #dde5e9;border-radius:13px;padding:8px;margin-bottom:8px;background:#fff}
+.stock-seccion-titulo{font-size:.9rem;font-weight:800;color:#123f61;margin-bottom:6px}
+.stock-productos{display:flex;flex-direction:column;gap:4px}
+.stock-producto-row{display:grid;grid-template-columns:1.05fr 160px 62px;align-items:center;gap:7px;padding:5px 3px;border-bottom:1px solid #edf1f3}
+.stock-producto-row:last-child{border-bottom:0}
+.stock-producto-nombre{font-size:.83rem;line-height:1.15;min-width:0}
+.stock-producto-nombre small{display:block;color:#70818a;font-size:.72rem;margin-top:2px}
+.stock-stepper{gap:4px!important}
+.stock-stepper .btn-cantidad{width:48px;min-width:48px;height:48px;font-size:1.45rem}
+.stock-stepper input{height:44px;font-size:1.22rem}
+.stock-parcial{text-align:right;font-size:.78rem;white-space:nowrap;color:#153e5d}
+.stock-total-productos{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:7px 9px;background:#eef6ff;border-radius:9px;color:#123f61;font-size:.82rem}
+.stock-total-productos strong{font-size:1rem}
+.stock-envases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stock-envase-item{border:1px solid #e2e8eb;border-radius:10px;padding:6px 4px;text-align:center}
+.stock-envase-item>span{display:block;font-weight:700;font-size:.74rem;margin-bottom:4px;color:#23465e}
+.stock-envase-item .stepper{gap:3px}
+.stock-envase-item .btn-cantidad{width:42px;min-width:42px;height:42px;font-size:1.25rem}
+.stock-envase-item .stepper input{height:40px;font-size:1.1rem}
+.stock-pago-seccion{background:#f8fbfd}
+.stock-pago-calculo{display:grid;grid-template-columns:1fr 20px 1.1fr 1fr;gap:6px;align-items:center}
+.stock-pago-calculo>div:not(.stock-pago-flecha){background:#fff;border:1px solid #e0e7ea;border-radius:10px;padding:7px 5px;text-align:center}
+.stock-pago-calculo span,.stock-entrega-wrap label{display:block;font-size:.67rem;font-weight:700;text-transform:uppercase;color:#61737d}
+.stock-pago-calculo strong{display:block;font-size:1rem;margin-top:3px;color:#c0392b}
+.stock-pago-calculo .saldo-restante{color:#2e8b57}
+.stock-pago-flecha{font-size:1.15rem;text-align:center;font-weight:800}
+.stock-entrega-wrap input{width:100%;box-sizing:border-box;border:0!important;background:transparent!important;margin:2px 0 0!important;padding:2px!important;text-align:center;font-size:1.05rem!important;font-weight:800;color:#123f61}
+.stock-entrega-wrap input:disabled{opacity:.55}
+.stock-entrega-wrap input[readonly]{background:#f5f9fb!important;border-radius:7px!important;border:1px solid #dbe5ea!important;padding:5px!important}
+.stock-ajustar-pago{margin-top:4px!important;min-height:30px!important;font-size:.65rem!important;padding:4px 7px!important}
+.stock-favor-line{font-size:.72rem;color:#667780;background:#fff9e8;border:1px solid #f0dfad;border-radius:8px;padding:6px 8px;margin-top:6px}
+.stock-favor-line.hay-favor{color:#226b48;background:#eefaf3;border-color:#b9e2ca}
+.stock-pago-ayuda{font-size:.72rem;color:#65757d;margin:6px 2px 7px;line-height:1.3}
+.stock-forma-titulo{font-size:.75rem;font-weight:800;color:#123f61;margin-bottom:5px}
+.stock-formas-pago{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.stock-forma-btn{min-height:54px;border-radius:11px;border:2px solid #d4dfe5;background:#fff;color:#123f61;font-weight:800;font-size:.73rem;padding:5px 4px;display:flex;align-items:center;justify-content:center;gap:4px;flex-direction:column}
+.stock-forma-btn.efectivo.activo{border-color:#2e8b57;background:#effaf3;color:#227544}
+.stock-forma-btn.transferencia.activo{border-color:#2479b5;background:#eef7fd;color:#1c6396}
+.stock-forma-btn.pendiente.activo{border-color:#e08a3e;background:#fff7ed;color:#b7671c}
+.stock-guardar-btn{min-height:54px!important;font-size:1rem!important;margin-top:6px!important;border-radius:13px!important}
+.stock-no-compra-btn{min-height:42px;margin-top:6px!important;font-size:.82rem!important}
+.stock-historial-seccion{margin-top:10px}
+.stock-historial-seccion h3{font-size:.88rem;margin:0 0 5px;color:#23465e}
+.stock-historial-seccion #historialStock{max-height:170px;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid #e0e5e8;border-radius:9px;padding:5px}
+@media(max-width:500px){
+ .modal-stock-unificado{padding:8px 9px 12px}
+ .stock-cliente-header{margin-bottom:6px}
+ .stock-cliente-header h2{font-size:1rem!important}
+ .stock-cliente-sub{font-size:.72rem}
+ .stock-historial-btn{min-height:38px;padding:6px 9px!important;font-size:.72rem!important}
+ .stock-resumen-principal{grid-template-columns:1fr 14px 1fr 14px 1.08fr;gap:2px}
+ .stock-resumen-box{padding:7px 3px}
+ .stock-resumen-box span{font-size:.58rem}
+ .stock-resumen-box strong{font-size:.88rem}
+ .stock-resumen-signo{font-size:.95rem}
+ .stock-producto-row{grid-template-columns:minmax(92px,1fr) 154px 54px;gap:4px;padding:4px 1px}
+ .stock-producto-nombre{font-size:.76rem}
+ .stock-producto-nombre small{font-size:.65rem}
+ .stock-stepper .btn-cantidad{width:47px;min-width:47px;height:48px;font-size:1.4rem}
+ .stock-stepper input{height:44px;font-size:1.2rem}
+ .stock-parcial{font-size:.7rem}
+ .stock-envases-grid{gap:4px}
+ .stock-envase-item{padding:5px 2px}
+ .stock-envase-item>span{font-size:.68rem}
+ .stock-envase-item .btn-cantidad{width:39px;min-width:39px;height:42px}
+ .stock-pago-calculo{grid-template-columns:1fr 14px 1.05fr 1fr;gap:3px}
+ .stock-pago-calculo>div:not(.stock-pago-flecha){padding:6px 3px}
+ .stock-pago-calculo strong{font-size:.84rem}
+ .stock-entrega-wrap input{font-size:.95rem!important}
+ .stock-forma-btn{min-height:56px;font-size:.67rem}
+ .stock-guardar-btn{min-height:56px!important;font-size:.95rem!important}
+}
+
+
+/* =====================================================
+   MODO OSCURO — STOCK / VENTA UNIFICADA
+   ===================================================== */
+body.oscuro {
+  background: #0b1b25;
+}
+body.oscuro .modal-venta {
+  background: #102532 !important;
+  color: #edf4f7;
+  border-color: #294b5e;
+}
+body.oscuro .modal-venta h2,
+body.oscuro .titulo-venta,
+body.oscuro .stock-cliente-header h2,
+body.oscuro .stock-seccion-titulo,
+body.oscuro .stock-forma-titulo {
+  color: #edf4f7;
+}
+body.oscuro .stock-cliente-sub,
+body.oscuro .stock-producto-nombre small,
+body.oscuro .stock-pago-ayuda,
+body.oscuro .stock-historial-seccion h3 {
+  color: #b8cbd4;
+}
+body.oscuro .stock-resumen-box {
+  background: #142f3e;
+  border-color: #31576b;
+}
+body.oscuro .stock-resumen-box.deuda { background: #2a2025; color: #ff7b72; border-color:#8b3e3b; }
+body.oscuro .stock-resumen-box.compra { background: #122d3e; color: #69bfff; border-color:#276e9d; }
+body.oscuro .stock-resumen-box.total { background: #2d281f; color: #ffb35c; border-color:#8a5b2d; }
+body.oscuro .stock-resumen-signo { color: #dce8ed; }
+body.oscuro .stock-envase-resumen { background:#142d3a; color:#bfd0d8; }
+body.oscuro .stock-seccion { background:#122b39; border-color:#31576b; }
+body.oscuro .stock-producto-row { border-bottom-color:#294857; }
+body.oscuro .stock-producto-nombre { color:#edf4f7; }
+body.oscuro .stock-parcial { color:#d9edf7; }
+body.oscuro .stock-total-productos { background:#12344b; color:#79c7f5; }
+body.oscuro .stock-envase-item { background:#102631; border-color:#31576b; }
+body.oscuro .stock-envase-item>span { color:#dce8ed; }
+body.oscuro .stock-pago-seccion { background:#102b39; }
+body.oscuro .stock-pago-calculo>div:not(.stock-pago-flecha) { background:#142f3e; border-color:#31576b; color:#edf4f7; }
+body.oscuro .stock-pago-calculo span,
+body.oscuro .stock-entrega-wrap label { color:#b8cbd4; }
+body.oscuro .stock-entrega-wrap input { color:#edf4f7; }
+body.oscuro .stock-entrega-wrap input[readonly] { background:#193645 !important; border-color:#31576b !important; color:#dce8ed; }
+body.oscuro .stock-favor-line { background:#2c281d; border-color:#6e572e; color:#e8d6a8; }
+body.oscuro .stock-favor-line.hay-favor { background:#123427; border-color:#286b4a; color:#9ee0ba; }
+body.oscuro .stock-forma-btn { background:#142f3e; border-color:#3b5968; color:#edf4f7; }
+body.oscuro .stock-forma-btn.efectivo.activo { background:#123a2b; border-color:#38a169; color:#9de4bd; }
+body.oscuro .stock-forma-btn.transferencia.activo { background:#12364c; border-color:#3188c5; color:#8ed0ff; }
+body.oscuro .stock-forma-btn.pendiente.activo { background:#3a2b1c; border-color:#d38a3e; color:#ffc37b; }
+body.oscuro .stock-historial-seccion #historialStock { background:#102631; border-color:#31576b; }
+body.oscuro .stock-historial-seccion .mov-item { color:#dce8ed; border-bottom-color:#294857; }
+body.oscuro .stock-no-compra-btn { color:#dce8ed; border-color:#466171; }
+body.oscuro .modal-venta hr { border-top-color:#31576b; }
