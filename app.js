@@ -660,10 +660,15 @@ async function verificarSuscripcion(){
       return;
     }
     if(!data){
+      window._estadoSuscripcionActual = null;
+      actualizarEstadoSuscripcionModal();
       // En el Supabase nuevo el trial se crea por trigger al registrar el usuario.
       // Si todavía no existe por una migración/estado transitorio, no bloqueamos la app.
       return;
     }
+
+    window._estadoSuscripcionActual = data;
+    actualizarEstadoSuscripcionModal();
 
     if(data.status === 'trial') {
       const finTrial = data.trial_ends_at ? new Date(data.trial_ends_at) : new Date();
@@ -674,7 +679,9 @@ async function verificarSuscripcion(){
       const textoBloqueo = 'Tu período de prueba de 7 días terminó.\n\nElegí un plan para seguir usando Aguatero:';
       document.getElementById('textoSuscripcionBloqueada').textContent = textoBloqueo;
       document.getElementById('pantallaSuscripcionBloqueada').style.display = 'flex';
-      mostrarEstadoMembresia({status:'trial_expired', trial_ends_at: finTrial.toISOString()});
+      window._estadoSuscripcionActual = {status:'trial_expired', trial_ends_at: finTrial.toISOString()};
+      mostrarEstadoMembresia(window._estadoSuscripcionActual);
+      actualizarEstadoSuscripcionModal();
       return;
     }
 
@@ -706,6 +713,56 @@ async function verificarSuscripcion(){
     }
   }catch(e){
     // sin internet no se puede chequear: lo dejamos seguir trabajando offline con lo que ya tiene
+  }
+}
+
+function abrirSuscripcion(){
+  const modal = document.getElementById('modalSuscripcion');
+  if(!modal) return;
+  actualizarEstadoSuscripcionModal();
+  modal.classList.add('open');
+  modal.style.display = 'flex';
+}
+
+function cerrarSuscripcion(){
+  const modal = document.getElementById('modalSuscripcion');
+  if(!modal) return;
+  modal.classList.remove('open');
+  modal.style.display = 'none';
+}
+
+function actualizarEstadoSuscripcionModal(){
+  const el = document.getElementById('suscripcionEstadoModal');
+  if(!el) return;
+  const datos = window._estadoSuscripcionActual || null;
+  if(!datos){
+    el.innerHTML = '<strong>🟡 Período de prueba</strong><br>Tu cuenta está lista para usar AGUATERO. Elegí un plan cuando quieras continuar con una suscripción paga.';
+    return;
+  }
+  if(datos.status === 'trial'){
+    const fin = datos.trial_ends_at ? new Date(datos.trial_ends_at) : null;
+    const dias = fin ? Math.max(0, Math.ceil((fin - new Date()) / 86400000)) : 0;
+    el.innerHTML = '<strong>🎁 Prueba gratuita activa</strong><br>Te quedan <strong>' + dias + ' días</strong> de prueba. Podés elegir tu plan ahora y continuar sin interrupciones.';
+    return;
+  }
+  const info = PLANES_SUSCRIPCION[datos.plan] || {nombre:'Suscripción', precio:null, periodo:''};
+  const activa = datos.status === 'active' && (!datos.current_period_end || new Date(datos.current_period_end) > new Date());
+  if(activa){
+    const vence = datos.current_period_end ? isoAFechaLabel(datos.current_period_end.slice(0,10)) : '';
+    el.innerHTML = '<strong>🟢 ' + info.nombre + ' activo</strong><br>' + (vence ? 'Vence: ' + vence + '.' : 'Tu suscripción está activa.') + '<br><span>Si querés cambiar de plan, gestioná tu suscripción en Mercado Pago.</span>';
+  } else {
+    el.innerHTML = '<strong>🔴 Suscripción no activa</strong><br>Elegí un plan para volver a utilizar AGUATERO.';
+  }
+}
+
+async function suscribirseDesdeModal(plan){
+  const btn = document.getElementById('btnSuscribirModal_' + plan);
+  const original = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Abriendo Mercado Pago...'; }
+  try{
+    await suscribirse(plan);
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = original; }
   }
 }
 

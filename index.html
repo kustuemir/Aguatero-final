@@ -170,6 +170,7 @@
     <button onclick="mostrarTransferenciasPendientes()">🕒 Transferencias pendientes</button>
     <button onclick="mostrarReporteSemanal()">📈 Reporte semanal</button>
     <button onclick="mostrarClientesInactivos()">🔔 Clientes inactivos</button>
+    <button onclick="abrirSuscripcion(); cerrarMenus();">💳 Mi suscripción / Ver planes</button>
     <div style="padding:8px 16px; font-size:0.7em; text-transform:uppercase; opacity:0.5; letter-spacing:1px;">Datos y respaldo</div>
     <div style="padding:10px 16px; background:rgba(46,125,50,0.1); border-radius:8px; margin:4px 16px; font-size:0.82em; color:#2e7d32;">
       ☁️ Tus datos se guardan automáticamente en la nube. Si perdés el celular o cambiás de equipo, entrás con tu email y contraseña y todo vuelve: clientes, historial y stock.
@@ -854,6 +855,37 @@
   </div>
   <div style="color:#cfe3ee; font-size:0.78em; text-align:center; max-width:310px; margin-top:14px;">🎁 Nuevos usuarios tienen 7 días de prueba gratis. El pago se procesa mediante Mercado Pago.</div>
   <button class="btn outline" style="margin-top:14px; max-width:300px; width:100%; background:transparent; color:white; border-color:white;" onclick="cerrarSesion(); document.getElementById('pantallaSuscripcionBloqueada').style.display='none';">🚪 Cerrar sesión</button>
+</div>
+
+<!-- MODAL DE SUSCRIPCION / PLANES -->
+<div class="modal-bg" id="modalSuscripcion" style="z-index:210;">
+  <div class="modal subscription-modal">
+    <button class="close-x" onclick="cerrarSuscripcion()">×</button>
+    <div class="subscription-brand">AGUATERO</div>
+    <div class="subscription-brand-line"></div>
+    <h2 style="text-align:center; margin:4px 0 6px;">Mi suscripción</h2>
+    <div id="suscripcionEstadoModal" class="subscription-status"></div>
+
+    <div class="subscription-plans">
+      <div class="subscription-plan">
+        <div class="subscription-plan-title">Mensual</div>
+        <div class="subscription-price">$14.999 <span>/mes</span></div>
+        <div class="subscription-desc">Acceso completo a AGUATERO · Renovación mensual.</div>
+        <button class="btn naranja" id="btnSuscribirModal_mensual" onclick="suscribirseDesdeModal('mensual')">💳 Elegir mensual</button>
+      </div>
+
+      <div class="subscription-plan featured">
+        <div class="subscription-badge">⭐ MEJOR OPCIÓN</div>
+        <div class="subscription-plan-title">Anual</div>
+        <div class="subscription-price">$159.999 <span>/año</span></div>
+        <div class="subscription-desc">Acceso completo · Pagás el equivalente a $13.333/mes.</div>
+        <button class="btn naranja" id="btnSuscribirModal_anual" onclick="suscribirseDesdeModal('anual')">💳 Elegir anual</button>
+      </div>
+    </div>
+
+    <div class="subscription-trial-note">🎁 Los nuevos usuarios tienen <strong>7 días de prueba gratis</strong>.</div>
+    <p class="subscription-footnote">El pago y la renovación se gestionan de forma segura mediante Mercado Pago.</p>
+  </div>
 </div>
 
 <script>
