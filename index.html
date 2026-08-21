@@ -82,12 +82,100 @@
     <p id="loginInfo" style="color:#9ee8b8; font-size:0.85em; display:none;"></p>
 
     <button class="btn naranja login-btn-ingresar" id="btnLoginAccion" onclick="accionLogin()">Ingresar</button>
-    <p style="font-size:0.78em; color:#cfe3ee; text-align:center; margin-top:12px;">¿No tenés cuenta? Pedile usuario y contraseña a quien te dio esta app.</p>
+
+    <div class="login-registro-separador"><span>¿Todavía no tenés una cuenta?</span></div>
+    <div class="login-registro-promo">
+      <strong>Probá AGUATERO gratis durante 7 días.</strong>
+      <button type="button" class="login-btn-registro" onclick="abrirRegistro()">CREAR CUENTA Y PROBAR 7 DÍAS</button>
+    </div>
 
     <p class="login-terminos">Al ingresar, aceptás los <a href="#" onclick="abrirModal('modalTerminos'); return false;">Términos</a> y la <a href="#" onclick="abrirModal('modalTerminos'); return false;">Política de Privacidad</a>.</p>
   </div>
 
   <p style="color:#cfe3ee; font-size:0.75em; margin-top:18px; text-align:center; position:relative; z-index:1;">Necesitás conexión a internet solo para iniciar sesión.<br>Una vez adentro, podés trabajar sin internet.</p>
+</div>
+
+<!-- MODAL REGISTRO + PRUEBA GRATUITA 7 DÍAS -->
+<div class="modal-overlay registro-pro-overlay" id="modalRegistro" style="display:none;">
+  <div class="registro-pro-modal" role="dialog" aria-modal="true" aria-labelledby="tituloRegistro">
+    <button type="button" class="registro-pro-close" onclick="cerrarRegistro()" aria-label="Cerrar">×</button>
+
+    <section class="registro-pro-brand">
+      <div class="registro-pro-brand-head">
+        <div class="registro-pro-logo"><img src="icon-192.png" alt="AGUATERO"></div>
+        <div class="registro-pro-brand-name">AGUA<span>TERO</span></div>
+        <div class="registro-pro-tagline">Tu reparto, todo bajo control</div>
+      </div>
+
+      <div class="registro-pro-trial">
+        <div class="registro-pro-trial-title">Probá gratis<br>durante <strong>7 días</strong> ✦</div>
+        <div class="registro-pro-trial-sub">Sin tarjeta de crédito.<br>Cancelás cuando quieras.</div>
+      </div>
+
+      <div class="registro-pro-water-art" aria-hidden="true">
+        <div class="registro-pro-water-drop">💧</div>
+        <div class="registro-pro-wave wave-a"></div>
+        <div class="registro-pro-wave wave-b"></div>
+      </div>
+
+      <div class="registro-pro-benefits">
+        <div class="registro-pro-benefit"><span>👥</span><div><b>Administrá tus clientes</b><small>Organizá tus clientes y recorridos de manera simple.</small></div></div>
+        <div class="registro-pro-benefit"><span>💰</span><div><b>Ventas y cobranzas</b><small>Registrá ventas, fiados, pagos y controlá deudas al instante.</small></div></div>
+        <div class="registro-pro-benefit"><span>📊</span><div><b>Histórico y reportes</b><small>Consultá el historial de cada cliente y el resumen de tus repartos.</small></div></div>
+        <div class="registro-pro-benefit"><span>☁️</span><div><b>Sincronización segura</b><small>Tus datos siempre respaldados en la nube.</small></div></div>
+      </div>
+      <div class="registro-pro-secure">♙ <span>Tus datos están <strong>protegidos</strong></span></div>
+    </section>
+
+    <section class="registro-pro-form">
+      <div class="registro-pro-form-icon">♙<span>+</span></div>
+      <h2 id="tituloRegistro">Crear cuenta</h2>
+      <p class="registro-pro-intro">Comenzá tu prueba gratuita de AGUATERO por <strong>7 días.</strong></p>
+      <div class="registro-pro-divider"><span>💧</span></div>
+
+      <label class="registro-pro-label">Nombre</label>
+      <div class="registro-pro-input-wrap">
+        <span>♙</span>
+        <input type="text" id="registroNombre" placeholder="Tu nombre o nombre del negocio" autocomplete="name" maxlength="80">
+      </div>
+
+      <label class="registro-pro-label">Correo electrónico</label>
+      <div class="registro-pro-input-wrap">
+        <span>✉</span>
+        <input type="email" id="registroEmail" placeholder="correo@ejemplo.com" autocomplete="email">
+      </div>
+
+      <label class="registro-pro-label">Contraseña</label>
+      <div class="registro-pro-input-wrap">
+        <span>♙</span>
+        <input type="password" id="registroPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+        <button type="button" class="registro-pro-eye" onclick="toggleRegistroPassword('registroPassword', this)" aria-label="Mostrar u ocultar contraseña">◉</button>
+      </div>
+
+      <label class="registro-pro-label">Confirmar contraseña</label>
+      <div class="registro-pro-input-wrap">
+        <span>♙</span>
+        <input type="password" id="registroPasswordConfirm" placeholder="Repetí tu contraseña" autocomplete="new-password">
+        <button type="button" class="registro-pro-eye" onclick="toggleRegistroPassword('registroPasswordConfirm', this)" aria-label="Mostrar u ocultar contraseña">◉</button>
+      </div>
+
+      <div class="registro-pro-terms">🛡️ <span>Al crear tu cuenta aceptás nuestros <a href="#" onclick="abrirModal('modalTerminos'); return false;">Términos y Condiciones</a> y <a href="#" onclick="abrirModal('modalTerminos'); return false;">Política de Privacidad</a>.</span></div>
+
+      <p id="registroError" class="registro-mensaje registro-error" style="display:none;"></p>
+      <p id="registroInfo" class="registro-mensaje registro-info" style="display:none;"></p>
+
+      <button type="button" class="registro-pro-submit" id="btnRegistroAccion" onclick="crearCuenta()"><span>💧</span> Crear cuenta y comenzar prueba <b>→</b></button>
+
+      <div class="registro-pro-or"><span></span> ó <span></span></div>
+      <button type="button" class="registro-pro-back" onclick="cerrarRegistro()">← &nbsp; Volver al ingreso</button>
+
+      <div class="registro-pro-foot">
+        <div><b>▣</b><span><strong>7 días</strong><small>gratis</small></span></div>
+        <div><b>▱</b><span><strong>Sin tarjeta</strong><small>de crédito</small></span></div>
+        <div><b>⊗</b><span><strong>Cancelás</strong><small>cuando quieras</small></span></div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <!-- MODAL TERMINOS Y CONDICIONES (accesible con o sin sesión iniciada) -->

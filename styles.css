@@ -1643,3 +1643,431 @@ body.oscuro .subscription-modal .close-x{color:#f2f6f8;}
   .subscription-plan{padding:14px 12px 12px;}
   .subscription-plan.featured{padding-top:17px;}
 }
+
+
+/* ---------- REGISTRO + PRUEBA GRATUITA 7 DÍAS ---------- */
+.login-registro-separador{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:18px 0 10px;
+  color:#cfe3ee;
+  font-size:.82em;
+}
+.login-registro-separador::before,
+.login-registro-separador::after{
+  content:"";
+  height:1px;
+  flex:1;
+  background:rgba(255,255,255,.18);
+}
+.login-registro-promo{
+  text-align:center;
+  color:#eaf7fc;
+  font-size:.86em;
+}
+.login-registro-promo strong{
+  display:block;
+  margin-bottom:10px;
+  font-weight:600;
+}
+.login-btn-registro{
+  width:100%;
+  min-height:48px;
+  border:1px solid rgba(111,195,224,.55);
+  border-radius:14px;
+  padding:13px 14px;
+  background:linear-gradient(135deg,rgba(41,182,246,.28),rgba(111,195,224,.12));
+  color:#fff;
+  font-weight:800;
+  font-size:.82em;
+  letter-spacing:.15px;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+  transition:transform .15s, background .15s;
+}
+.login-btn-registro:active{
+  transform:scale(.98);
+  background:rgba(41,182,246,.35);
+}
+
+/* Registro: aspecto más limpio y pensado primero para celular */
+#modalRegistro.modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  background:rgba(3,25,39,.72);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.login-registro-modal{
+  width:min(94vw, 440px);
+  max-height:min(92vh, 720px);
+  max-height:min(92dvh, 720px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  position:relative;
+  padding:26px 22px 20px;
+  box-sizing:border-box;
+  border:1px solid rgba(111,195,224,.28);
+  border-radius:24px;
+  background:linear-gradient(180deg,#f8fcfe 0%,#eef7fa 100%);
+  color:#12303f;
+  box-shadow:0 24px 70px rgba(0,0,0,.40);
+}
+.login-registro-modal h2{
+  text-align:center;
+  margin:4px 0 6px;
+  color:#0b3d5c;
+  font-size:1.45em;
+}
+.login-registro-icon{
+  width:58px;
+  height:58px;
+  margin:0 auto 9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  background:linear-gradient(135deg,#e0f5fc,#c7edf8);
+  color:#0b6d9b;
+  font-size:29px;
+  box-shadow:0 8px 18px rgba(11,61,92,.12);
+}
+.login-registro-intro{
+  text-align:center;
+  margin:0 auto 19px;
+  color:#527080;
+  font-size:.9em;
+  line-height:1.45;
+  max-width:330px;
+}
+.login-registro-modal .login-label{
+  color:#17445a;
+  margin-bottom:6px;
+}
+.login-registro-modal .login-input-wrap{ margin-bottom:13px; }
+.login-registro-modal .login-input-wrap .login-input{
+  min-height:48px;
+  border:1px solid #c7dce5;
+  background:#fff;
+  color:#12303f;
+  box-shadow:0 2px 7px rgba(11,61,92,.05);
+}
+.login-registro-modal .login-input-wrap .login-input:focus{
+  outline:none;
+  border-color:#29b6f6;
+  box-shadow:0 0 0 3px rgba(41,182,246,.14);
+}
+.login-registro-modal .login-input-icon{ color:#4e7b8e; }
+.registro-eye{ right:8px; color:#315e70; min-width:38px; min-height:38px; }
+.registro-mensaje{
+  border-radius:12px;
+  padding:11px 12px;
+  font-size:.84em;
+  line-height:1.4;
+  margin:4px 0 10px;
+}
+.registro-error{ background:#fff0ef; color:#a72e26; border:1px solid #f2c5c1; }
+.registro-info{ background:#ecf9f1; color:#247342; border:1px solid #c4e8d1; }
+.login-registro-modal .login-btn-ingresar{
+  width:100%;
+  min-height:50px;
+  margin-top:3px;
+  border-radius:14px;
+  font-weight:800;
+  font-size:.9em;
+}
+.registro-btn-volver{
+  width:100%;
+  min-height:44px;
+  margin-top:9px;
+  border-radius:13px;
+}
+body.oscuro .login-registro-modal{
+  background:linear-gradient(180deg,#193646 0%,#142d3b 100%);
+  color:#e8eef2;
+  border-color:#315a6c;
+}
+body.oscuro .login-registro-modal h2{ color:#eaf7fc; }
+body.oscuro .login-registro-intro{ color:#b8d0da; }
+body.oscuro .login-registro-modal .login-label{ color:#dcecf2; }
+body.oscuro .login-registro-modal .login-input-wrap .login-input{
+  background:#f7fbfd;
+  color:#12303f;
+  border-color:#527487;
+}
+body.oscuro .login-registro-icon{ background:rgba(41,182,246,.18); }
+
+@media (max-width:480px){
+  #modalRegistro.modal-overlay{ align-items:flex-start; }
+  .login-registro-modal{
+    width:100%;
+    max-width:440px;
+    max-height:calc(var(--alto-viewport, 100dvh) - 18px);
+    margin:9px 0;
+    padding:22px 16px 16px;
+    border-radius:21px;
+  }
+  .login-registro-modal h2{ font-size:1.3em; }
+  .login-registro-icon{ width:52px; height:52px; font-size:26px; }
+  .login-registro-intro{ margin-bottom:16px; }
+  .login-registro-modal .login-input-wrap{ margin-bottom:11px; }
+}
+@media (max-height:620px){
+  .login-registro-modal{ padding-top:16px; }
+  .login-registro-icon{ width:44px; height:44px; font-size:22px; margin-bottom:5px; }
+  .login-registro-modal h2{ margin-top:2px; }
+  .login-registro-intro{ margin-bottom:10px; }
+}
+
+
+/* =====================================================
+   REGISTRO PROFESIONAL — DISEÑO AGUATERO
+   Basado en la maqueta aprobada: azul profundo + petróleo + celeste + naranja.
+   No modifica la lógica del registro ni el resto de la aplicación.
+   ===================================================== */
+#modalRegistro.registro-pro-overlay{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  box-sizing:border-box;
+  background:rgba(2,16,28,.88);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+#modalRegistro.registro-pro-overlay.open{display:flex !important;}
+.registro-pro-modal{
+  position:relative;
+  width:min(1040px,100%);
+  max-height:min(94dvh,900px);
+  min-height:640px;
+  display:grid;
+  grid-template-columns:38% 62%;
+  overflow:hidden;
+  border:1px solid rgba(41,182,246,.55);
+  border-radius:28px;
+  background:linear-gradient(135deg,#032b47 0%,#063a5a 48%,#052c45 100%);
+  box-shadow:0 28px 90px rgba(0,0,0,.55),0 0 45px rgba(41,182,246,.12);
+  color:#fff;
+}
+.registro-pro-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:20;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  border:1px solid rgba(111,195,224,.38);
+  background:rgba(2,27,44,.72);
+  color:#fff;
+  font-size:30px;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+.registro-pro-close:hover{background:rgba(41,182,246,.22);}
+.registro-pro-brand{
+  position:relative;
+  min-width:0;
+  padding:34px 28px 26px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#032943 0%,#03253d 58%,#021b2d 100%);
+  border-right:1px solid rgba(41,182,246,.25);
+}
+.registro-pro-brand::after{
+  content:"";
+  position:absolute;
+  left:-80px; right:-80px; bottom:-90px;
+  height:220px;
+  background:radial-gradient(ellipse at center,rgba(41,182,246,.35),transparent 68%);
+  pointer-events:none;
+}
+.registro-pro-brand-head{text-align:left;position:relative;z-index:2;}
+.registro-pro-logo{
+  width:82px;height:82px;margin:0 0 10px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:24px;
+  background:linear-gradient(145deg,#0877a8,#043b60);
+  box-shadow:0 0 30px rgba(41,182,246,.22);
+}
+.registro-pro-logo img{width:70px;height:70px;border-radius:20px;object-fit:cover;}
+.registro-pro-brand-name{
+  font-size:clamp(2rem,4vw,3rem);
+  line-height:1;
+  font-weight:900;
+  letter-spacing:1.5px;
+}
+.registro-pro-brand-name span{color:#29b6f6;}
+.registro-pro-tagline{
+  margin-top:8px;
+  font-size:1.05rem;
+  color:#c9e9f7;
+  font-style:italic;
+}
+.registro-pro-trial{
+  position:relative;z-index:3;
+  margin-top:25px;
+  padding:17px 18px;
+  border:1px solid rgba(41,182,246,.42);
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(7,91,137,.46),rgba(4,42,66,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.registro-pro-trial-title{font-size:1.6rem;font-weight:800;line-height:1.12;}
+.registro-pro-trial-title strong{color:#ff9a22;}
+.registro-pro-trial-sub{margin-top:10px;color:#d8edf6;line-height:1.45;}
+.registro-pro-water-art{
+  position:relative;
+  z-index:1;
+  height:205px;
+  margin:4px -28px 4px;
+  overflow:hidden;
+  background-image:url('registro-water-art.png');
+  background-size:cover;
+  background-position:center 52%;
+  opacity:.82;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 80%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 80%,transparent 100%);
+}
+.registro-pro-water-drop{display:none;}
+.registro-pro-wave{display:none;}
+.registro-pro-benefits{position:relative;z-index:3;margin-top:-8px;display:grid;gap:13px;}
+.registro-pro-benefit{display:flex;gap:12px;align-items:flex-start;}
+.registro-pro-benefit>span{
+  flex:0 0 42px;width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#075c8a,#063b5b);
+  border:1px solid rgba(41,182,246,.35);
+  font-size:20px;
+  box-shadow:0 5px 15px rgba(0,0,0,.18);
+}
+.registro-pro-benefit b{display:block;font-size:.98rem;margin-bottom:3px;}
+.registro-pro-benefit small{display:block;color:#b8d6e3;font-size:.79rem;line-height:1.35;}
+.registro-pro-secure{position:relative;z-index:3;margin-top:18px;color:#bfe5f3;font-size:.82rem;display:flex;gap:8px;align-items:center;}
+.registro-pro-secure strong{color:#29b6f6;}
+.registro-pro-form{
+  min-width:0;
+  overflow-y:auto;
+  padding:48px 58px 26px;
+  background:linear-gradient(180deg,rgba(4,54,81,.96),rgba(2,39,61,.98));
+  scrollbar-width:thin;
+  scrollbar-color:#197ca8 transparent;
+}
+.registro-pro-form-icon{
+  width:88px;height:88px;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  border-radius:50%;
+  border:2px solid #29b6f6;
+  background:radial-gradient(circle at 35% 25%,#1498d3,#075075 65%,#043b5c);
+  box-shadow:0 0 32px rgba(41,182,246,.38),inset 0 0 18px rgba(255,255,255,.08);
+  font-size:45px;color:#fff;
+}
+.registro-pro-form-icon span{position:absolute;right:-4px;bottom:-1px;width:31px;height:31px;border-radius:50%;background:#29b6f6;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.25);}
+.registro-pro-form h2{text-align:center;font-size:2.4rem;margin:0;font-weight:900;letter-spacing:-.5px;}
+.registro-pro-intro{text-align:center;color:#c6e3ef;font-size:1.1rem;line-height:1.45;margin:10px 0 12px;}
+.registro-pro-intro strong{color:#ff9a22;}
+.registro-pro-divider{display:flex;align-items:center;gap:12px;color:#29b6f6;margin:10px 0 18px;}
+.registro-pro-divider::before,.registro-pro-divider::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(41,182,246,.6));}
+.registro-pro-divider::after{background:linear-gradient(90deg,rgba(41,182,246,.6),transparent);}
+.registro-pro-label{display:block;color:#fff;font-size:.95rem;font-weight:800;margin:0 0 6px;}
+.registro-pro-input-wrap{position:relative;margin-bottom:13px;}
+.registro-pro-input-wrap>span{position:absolute;left:18px;top:50%;transform:translateY(-50%);z-index:2;color:#bfe9f8;font-size:1.25rem;pointer-events:none;}
+.registro-pro-input-wrap input{
+  width:100%;box-sizing:border-box;
+  min-height:58px;
+  padding:14px 48px 14px 52px;
+  border-radius:16px;
+  border:1px solid rgba(129,196,226,.45);
+  background:linear-gradient(180deg,rgba(80,139,171,.34),rgba(47,102,135,.32));
+  color:#f4fbff;
+  font-size:1rem;
+  outline:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 3px 12px rgba(0,0,0,.08);
+}
+.registro-pro-input-wrap input::placeholder{color:#bfd0da;opacity:1;}
+.registro-pro-input-wrap input:focus{border-color:#29b6f6;box-shadow:0 0 0 3px rgba(41,182,246,.14),0 0 20px rgba(41,182,246,.12);}
+.registro-pro-eye{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:transparent;color:#d5ebf5;font-size:1.15rem;cursor:pointer;}
+.registro-pro-terms{display:flex;gap:11px;align-items:flex-start;margin:12px 0 16px;padding:14px 15px;border:1px solid rgba(41,182,246,.45);border-radius:16px;background:rgba(2,37,59,.42);color:#c9e2ed;font-size:.83rem;line-height:1.4;}
+.registro-pro-terms a{color:#55cdfc;text-decoration:underline;font-weight:700;}
+.registro-pro-submit{
+  width:100%;min-height:58px;border:1px solid rgba(255,198,105,.7);border-radius:16px;
+  background:linear-gradient(180deg,#ffab32,#f47d12);color:#fff;
+  font-size:1.02rem;font-weight:900;cursor:pointer;
+  box-shadow:0 10px 28px rgba(244,125,18,.28),inset 0 1px 0 rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.registro-pro-submit:hover{filter:brightness(1.05);}
+.registro-pro-submit:disabled{opacity:.65;cursor:not-allowed;}
+.registro-pro-submit b{font-size:1.35rem;margin-left:auto;margin-right:13px;}
+.registro-pro-or{display:flex;align-items:center;gap:12px;justify-content:center;color:#c0d8e4;margin:18px 0 12px;}
+.registro-pro-or span{height:1px;flex:1;background:rgba(41,182,246,.42);}
+.registro-pro-back{width:100%;min-height:52px;border:1px solid #29b6f6;border-radius:15px;background:rgba(2,42,67,.35);color:#5bd2ff;font-size:1rem;font-weight:800;cursor:pointer;}
+.registro-pro-back:hover{background:rgba(41,182,246,.1);}
+.registro-pro-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(41,182,246,.3);}
+.registro-pro-foot>div{display:flex;align-items:center;justify-content:center;gap:8px;color:#d7eaf2;min-width:0;}
+.registro-pro-foot b{font-size:1.35rem;color:#29b6f6;}
+.registro-pro-foot span{display:flex;flex-direction:column;line-height:1.1;}
+.registro-pro-foot strong{font-size:.78rem;white-space:nowrap;}
+.registro-pro-foot small{font-size:.72rem;color:#b7d0dc;white-space:nowrap;}
+#modalRegistro .registro-error{background:rgba(174,45,38,.22);color:#ffd5d0;border-color:rgba(255,120,110,.45);}
+#modalRegistro .registro-info{background:rgba(36,115,66,.22);color:#d1f5df;border-color:rgba(111,220,150,.4);}
+
+@media (max-width:850px){
+  #modalRegistro.registro-pro-overlay{padding:10px;align-items:center;}
+  .registro-pro-modal{grid-template-columns:1fr 1.28fr;min-height:0;max-height:96dvh;border-radius:23px;}
+  .registro-pro-brand{padding:25px 18px 20px;}
+  .registro-pro-form{padding:38px 28px 22px;}
+  .registro-pro-trial-title{font-size:1.25rem;}
+  .registro-pro-benefit small{font-size:.72rem;}
+  .registro-pro-form h2{font-size:2rem;}
+  .registro-pro-intro{font-size:.95rem;}
+}
+@media (max-width:650px){
+  #modalRegistro.registro-pro-overlay{padding:0;align-items:stretch;}
+  .registro-pro-modal{width:100%;height:100dvh;max-height:none;min-height:0;display:block;border-radius:0;border:0;overflow:hidden;}
+  .registro-pro-close{top:max(12px,env(safe-area-inset-top));right:12px;width:42px;height:42px;font-size:28px;}
+  .registro-pro-brand{height:auto;max-height:28dvh;padding:22px 20px 10px;overflow:hidden;border-right:0;border-bottom:1px solid rgba(41,182,246,.22);}
+  .registro-pro-logo{width:50px;height:50px;border-radius:16px;margin:0 0 6px;}
+  .registro-pro-logo img{width:43px;height:43px;border-radius:13px;}
+  .registro-pro-brand-name{font-size:1.7rem;}
+  .registro-pro-tagline{font-size:.82rem;margin-top:4px;}
+  .registro-pro-trial{margin-top:10px;padding:9px 12px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .registro-pro-trial-title{font-size:1rem;}
+  .registro-pro-trial-sub{font-size:.72rem;margin:0;text-align:right;}
+  .registro-pro-water-art{display:none;}
+  .registro-pro-benefits{display:none;}
+  .registro-pro-secure{display:none;}
+  .registro-pro-form{height:72dvh;max-height:72dvh;overflow-y:auto;padding:20px 20px max(22px,env(safe-area-inset-bottom));}
+  .registro-pro-form-icon{width:58px;height:58px;font-size:30px;margin-bottom:6px;}
+  .registro-pro-form-icon span{width:23px;height:23px;font-size:18px;}
+  .registro-pro-form h2{font-size:1.75rem;}
+  .registro-pro-intro{font-size:.9rem;margin:6px 0 8px;}
+  .registro-pro-divider{margin:7px 0 11px;}
+  .registro-pro-label{font-size:.83rem;margin-bottom:4px;}
+  .registro-pro-input-wrap{margin-bottom:9px;}
+  .registro-pro-input-wrap input{min-height:50px;padding:12px 44px 12px 45px;border-radius:14px;font-size:.92rem;}
+  .registro-pro-input-wrap>span{left:15px;font-size:1.05rem;}
+  .registro-pro-eye{width:36px;height:36px;right:6px;}
+  .registro-pro-terms{font-size:.73rem;padding:10px 11px;margin:8px 0 10px;border-radius:13px;}
+  .registro-pro-submit{min-height:51px;border-radius:14px;font-size:.88rem;}
+  .registro-pro-or{margin:11px 0 8px;font-size:.8rem;}
+  .registro-pro-back{min-height:46px;border-radius:13px;font-size:.9rem;}
+  .registro-pro-foot{margin-top:12px;padding-top:10px;gap:4px;}
+  .registro-pro-foot b{font-size:1rem;}
+  .registro-pro-foot strong{font-size:.65rem;}
+  .registro-pro-foot small{font-size:.6rem;}
+}
