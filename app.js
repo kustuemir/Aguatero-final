@@ -567,6 +567,18 @@ function traducirErrorSupabase(error){
 }
 
 // Mostrar/ocultar la contraseña con el ícono del ojito
+function toggleRegistroPassword(id, btn){
+  const input = document.getElementById(id);
+  if(!input) return;
+  if(input.type === 'password'){
+    input.type = 'text';
+    if(btn){ btn.textContent = '🙈'; btn.setAttribute('aria-label','Ocultar contraseña'); }
+  } else {
+    input.type = 'password';
+    if(btn){ btn.textContent = '👁️'; btn.setAttribute('aria-label','Mostrar contraseña'); }
+  }
+}
+
 function toggleMostrarPassword(){
   const input = document.getElementById('loginPassword');
   const btn = document.getElementById('btnTogglePassword');
@@ -577,6 +589,135 @@ function toggleMostrarPassword(){
   } else {
     input.type = 'password';
     if(btn) btn.textContent = '👁️';
+  }
+}
+
+// Ajuste para Android: cuando aparece el teclado, mantener el campo activo visible.
+(function prepararTecladoRegistro(){
+  if(!window.visualViewport) return;
+  const actualizar = () => {
+    document.documentElement.style.setProperty('--alto-viewport', window.visualViewport.height + 'px');
+    const activo = document.activeElement;
+    if(activo && activo.closest && activo.closest('#modalRegistro')){
+      setTimeout(() => activo.scrollIntoView({behavior:'smooth', block:'center'}), 60);
+    }
+  };
+  window.visualViewport.addEventListener('resize', actualizar);
+  window.visualViewport.addEventListener('scroll', actualizar);
+})();
+
+// ---------- REGISTRO + PRUEBA GRATUITA 7 DÍAS ----------
+function abrirRegistro(){
+  const modal = document.getElementById('modalRegistro');
+  if(!modal) return;
+  ocultarMensajesLogin();
+  ['registroNombre','registroEmail','registroPassword','registroPasswordConfirm'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  ocultarMensajesRegistro();
+  modal.style.display = 'flex';
+  modal.classList.add('open');
+  setTimeout(() => {
+    const el = document.getElementById('registroNombre');
+    if(el){
+      el.focus({preventScroll:true});
+      setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'center'}), 120);
+    }
+  }, 180);
+}
+
+function cerrarRegistro(){
+  const modal = document.getElementById('modalRegistro');
+  if(!modal) return;
+  modal.classList.remove('open');
+  modal.style.display = 'none';
+}
+
+function ocultarMensajesRegistro(){
+  ['registroError','registroInfo'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+  });
+}
+
+function mostrarErrorRegistro(msg){
+  const el = document.getElementById('registroError');
+  if(el){
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  const info = document.getElementById('registroInfo');
+  if(info) info.style.display = 'none';
+}
+
+function mostrarInfoRegistro(msg){
+  const el = document.getElementById('registroInfo');
+  if(el){
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  const error = document.getElementById('registroError');
+  if(error) error.style.display = 'none';
+}
+
+async function crearCuenta(){
+  ocultarMensajesRegistro();
+
+  const nombre = (document.getElementById('registroNombre')?.value || '').trim();
+  const email = (document.getElementById('registroEmail')?.value || '').trim().toLowerCase();
+  const password = document.getElementById('registroPassword')?.value || '';
+  const confirmar = document.getElementById('registroPasswordConfirm')?.value || '';
+
+  if(!nombre){ mostrarErrorRegistro('Completá tu nombre.'); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    mostrarErrorRegistro('Ingresá un correo electrónico válido.'); return;
+  }
+  if(password.length < 6){
+    mostrarErrorRegistro('La contraseña debe tener al menos 6 caracteres.'); return;
+  }
+  if(password !== confirmar){
+    mostrarErrorRegistro('Las contraseñas no coinciden.'); return;
+  }
+  if(!supabaseConfigurado()){
+    mostrarErrorRegistro('La aplicación todavía no está conectada a Supabase.'); return;
+  }
+
+  const boton = document.getElementById('btnRegistroAccion');
+  if(boton){ boton.disabled = true; boton.textContent = 'Creando cuenta...'; }
+
+  try{
+    // Supabase Auth crea el usuario y el trigger existente en
+    // public.subscriptions registra automáticamente el trial de 7 días.
+    // La contraseña nunca se guarda manualmente ni en LocalStorage.
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: { data: { nombre_marca: nombre } }
+    });
+
+    if(error){
+      mostrarErrorRegistro(traducirErrorSupabase(error));
+      return;
+    }
+
+    if(data && data.session){
+      cerrarRegistro();
+      onLoginExitoso(data.session);
+      setTimeout(() => mostrarToast('¡Cuenta creada! Tenés 7 días de prueba gratis.'), 500);
+      return;
+    }
+
+    // Si Supabase exige confirmar el correo, no hay sesión todavía.
+    // La cuenta y el trial se registran en Supabase por el trigger existente.
+    mostrarInfoRegistro('Cuenta creada. Revisá tu correo para confirmar la cuenta y después ingresá con tu email y contraseña. Tu prueba gratuita dura 7 días desde el registro.');
+  }catch(e){
+    mostrarErrorRegistro('No se pudo crear la cuenta. Revisá tu conexión e intentá nuevamente.');
+  }finally{
+    if(boton){ boton.disabled = false; boton.textContent = 'Crear cuenta y comenzar prueba'; }
   }
 }
 
