@@ -525,7 +525,7 @@
 
     <button class="btn btn-registrar stock-guardar-btn" type="button" onclick="confirmarStock(getFormaStockSeleccionada())">✓ GUARDAR VISITA</button>
 
-    <button class="btn outline stock-no-compra-btn" type="button" onclick="marcarNoCompra()">No compra / solo visita</button>
+    <button class="btn stock-fiado-btn" id="stkFormaFiado" type="button" onclick="registrarFiadoStock()">📝 FIADO — CERRAR VENTA</button>
 
     <section class="stock-historial-seccion">
       <h3>Historial de este cliente</h3>
@@ -684,6 +684,7 @@
     <div class="btn-row">
       <button class="btn" id="btnEditCompro" onclick="setTipoEdicion('compra')">Compró</button>
       <button class="btn outline" id="btnEditNoCompro" onclick="setTipoEdicion('no_compra')">No compró</button>
+      <button class="btn outline" id="btnEditPago" onclick="setTipoEdicion('pago')">💵 Pago de deuda</button>
     </div>
 
     <div id="camposEditCompra">
@@ -713,6 +714,16 @@
         <label>Monto entregado ($)</label>
         <input type="number" inputmode="numeric" id="editMontoEntregado">
       </div>
+    </div>
+
+    <div id="camposEditPago" style="display:none;">
+      <label>Importe del pago ($)</label>
+      <input type="number" inputmode="numeric" id="editPagoMonto" min="0">
+      <label>Forma de pago</label>
+      <select id="editPagoForma">
+        <option value="efectivo">Efectivo</option>
+        <option value="transferencia">Transferencia</option>
+      </select>
     </div>
 
     <button class="btn naranja" onclick="guardarEdicionMovimiento()">Guardar corrección</button>

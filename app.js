@@ -169,7 +169,34 @@ function claveOperacion(op){
 }
 
 function snapshotStock(){ return JSON.parse(JSON.stringify(stockCamion || {})); }
+
+function recalcularDeudaGeneradaHoy(){
+  const reparto = repartoActualId;
+  if(!reparto) return;
+  let comprasPendientes = 0;
+  let pagosAplicados = 0;
+  clientes.forEach(c=>{
+    (c.historial || []).forEach(entry=>{
+      if(entry.repartoId !== reparto) return;
+      if(entry.tipo === 'compra'){
+        const costo = Math.max(0, Number(entry.costo || 0));
+        const pagado = Math.max(0, Number(entry.montoPagado || 0));
+        const pendiente = Math.max(0, costo - pagado);
+        comprasPendientes += pendiente;
+      }else if(entry.tipo === 'pago'){
+        const aplicado = Number.isFinite(Number(entry.montoAplicadoDeuda))
+          ? Math.max(0, Number(entry.montoAplicadoDeuda))
+          : Math.max(0, Number(entry.montoPagado || 0));
+        pagosAplicados += aplicado;
+      }
+    });
+  });
+  deudaGeneradaHoy = Math.max(0, comprasPendientes - pagosAplicados);
+  return deudaGeneradaHoy;
+}
+
 function snapshotResumen(fecha){
+  recalcularDeudaGeneradaHoy();
   return {fecha:fecha,venta:ventaHoy,efectivo:efectivoHoy,transferencia:transferenciaHoy,deuda:deudaGeneradaHoy,cobroDeuda:cobroDeudaHoy,
     envasesEntregados:envasesEntregadosHoy,envasesRecibidos:envasesRecibidosHoy,
     b20Vendidos:b20VendidosHoy,b10Vendidos:b10VendidosHoy,dispVendidos:dispVendidosHoy,sodaVendidas:sodaVendidasHoy,
@@ -1030,6 +1057,7 @@ function cargarDeBaseRespaldo(){
 }
 
 function construirEstadoActual(){
+  recalcularDeudaGeneradaHoy();
   return {
     clientes,
     contadorClientes,
@@ -2198,7 +2226,7 @@ function renderDetalle(c){
           <span style="display:flex; gap:4px; margin-top:2px;">
             ${(h.id && h.tipo === 'compra') ? `<button class="btn chico outline" style="padding:2px 8px;" onclick="abrirBoleta('${c.id}','${h.id}')">🧾</button>` : ''}
             ${(h.id && h.tipo === 'compra') ? `<button class="btn chico outline" style="padding:2px 8px;" onclick="compartirBoleta('${c.id}','${h.id}')">📲</button>` : ''}
-            ${(h.id && h.tipo !== 'pago') ? `<button class="btn chico outline" style="padding:2px 8px;" onclick="abrirEditarMovimiento('${c.id}','${h.id}')">✏️</button>` : ''}
+            ${h.id ? `<button class="btn chico outline" style="padding:2px 8px;" title="${h.tipo==='pago'?'Corregir pago':'Corregir movimiento'}" onclick="abrirEditarMovimiento('${c.id}','${h.id}')">✏️</button>` : ''}
           </span>
         </span>
       </div>`
@@ -2231,19 +2259,26 @@ function getFormaStockSeleccionada(){
 
 function seleccionarFormaStock(forma){
   window._formaPagoStock = forma;
-  document.querySelectorAll('.stock-forma-btn').forEach(btn=>btn.classList.remove('activo'));
-  const id = forma==='efectivo' ? 'stkFormaEfectivo' : forma==='transferencia' ? 'stkFormaTransferencia' : 'stkFormaPendiente';
-  const btn=document.getElementById(id);
+  document.querySelectorAll('.stock-forma-btn, .stock-fiado-btn').forEach(btn=>btn.classList.remove('activo'));
+
+  const id =
+    forma==='efectivo' ? 'stkFormaEfectivo' :
+    forma==='transferencia' ? 'stkFormaTransferencia' :
+    forma==='transferencia_pendiente' ? 'stkFormaPendiente' :
+    forma==='entregado' ? 'stkFormaFiado' : null;
+
+  const btn=id ? document.getElementById(id) : null;
   if(btn) btn.classList.add('activo');
 
   const entrega=document.getElementById('stkEntregado');
   const ajustar=document.getElementById('stkBtnAjustarPago');
+
   if(entrega){
-    if(forma==='transferencia_pendiente'){
+    if(forma==='transferencia_pendiente' || forma==='entregado'){
       entrega.value='0';
       entrega.readOnly=true;
       entrega.disabled=true;
-      entrega.placeholder='$ 0 (queda pendiente)';
+      entrega.placeholder = forma==='entregado' ? '$ 0 (fiado)' : '$ 0 (queda pendiente)';
       if(ajustar) ajustar.style.display='none';
     }else{
       entrega.disabled=false;
@@ -2254,6 +2289,24 @@ function seleccionarFormaStock(forma){
     }
   }
   actualizarPreviewStock();
+}
+
+async function registrarFiadoStock(){
+  const c=clientes.find(x=>x.id===clienteStockId);
+  if(!c) return;
+
+  // FIADO significa que no se recibe dinero: la compra completa queda pendiente.
+  window._ajustePagoStock=true;
+  seleccionarFormaStock('entregado');
+
+  const entrega=document.getElementById('stkEntregado');
+  if(entrega){
+    entrega.value='0';
+    entrega.readOnly=true;
+    entrega.disabled=true;
+  }
+
+  await confirmarStock('entregado');
 }
 
 function cargarImporteAutomaticoStock(){
@@ -2571,6 +2624,12 @@ function registrarPago(formaPago){
   cobroDeudaHoy += aplicadoDeuda;
   if(formaPago === 'efectivo') efectivoHoy += monto;
   else if(formaPago === 'transferencia') transferenciaHoy += monto;
+  // Si el pago salda deuda generada en este mismo reparto, el cierre debe mostrar
+  // esa deuda como cancelada y no contarla a la vez como deuda y cobro.
+  if(movimientoPerteneceAlRepartoActual(entry)){
+    deudaGeneradaHoy = Math.max(0, deudaGeneradaHoy - Math.min(aplicadoDeuda, deudaGeneradaHoy));
+  }
+  recalcularDeudaGeneradaHoy();
   syncResumenDiario();
 
   document.getElementById('inputPago').value = '';
@@ -2788,9 +2847,17 @@ function aplicarEfectoMovimiento(c,entry){
       ? Math.max(0, Number(entry.montoAplicadoDeuda))
       : Math.max(0, Number(entry.montoPagado || 0));
     const saldoFavor = Math.max(0, Number(entry.montoSaldoFavor || 0));
-    c.saldo = Math.max(0, (c.saldo || 0) - aplicadoDeuda);
+    const saldoAntes = Math.max(0, Number(c.saldo || 0));
+    c.saldo = Math.max(0, saldoAntes - Math.min(aplicadoDeuda, saldoAntes));
     if(saldoFavor > 0) c.saldoAFavor = Number(c.saldoAFavor || 0) + saldoFavor;
-    if(movimientoPerteneceAlRepartoActual(entry)){ cobradoHoy += entry.montoPagado || 0; cobroDeudaHoy += entry.montoPagado || 0; }
+    if(movimientoPerteneceAlRepartoActual(entry)){
+      cobradoHoy += entry.montoPagado || 0;
+      cobroDeudaHoy += aplicadoDeuda;
+      if(entry.formaPago==='efectivo') efectivoHoy += entry.montoPagado || 0;
+      if(entry.formaPago==='transferencia') transferenciaHoy += entry.montoPagado || 0;
+      if(entry.formaPago==='entregado') entregadoHoy += entry.montoPagado || 0;
+      deudaGeneradaHoy = Math.max(0, deudaGeneradaHoy - Math.min(aplicadoDeuda, deudaGeneradaHoy));
+    }
   }
 }
 
@@ -2819,13 +2886,19 @@ function revertirEfectoMovimiento(c,entry){
       b20VendidosHoy -= entry.b20||0; b10VendidosHoy -= entry.b10||0; dispVendidosHoy -= entry.disp||0; sodaVendidasHoy -= entry.soda||0;
     }
   }else if(entry.tipo==='pago'){
-    if(movimientoPerteneceAlRepartoActual(entry)){ cobradoHoy -= entry.montoPagado || 0; cobroDeudaHoy -= entry.montoPagado || 0; }
     const aplicadoDeuda = Number.isFinite(Number(entry.montoAplicadoDeuda))
       ? Math.max(0, Number(entry.montoAplicadoDeuda))
       : Math.max(0, Number(entry.montoPagado || 0));
     const saldoFavor = Math.max(0, Number(entry.montoSaldoFavor || 0));
-    c.saldo = Number(c.saldo || 0) + aplicadoDeuda;
+    c.saldo = Math.max(0, Number(c.saldo || 0) + aplicadoDeuda);
     if(saldoFavor > 0) c.saldoAFavor = Math.max(0, Number(c.saldoAFavor || 0) - saldoFavor);
+    if(movimientoPerteneceAlRepartoActual(entry)){
+      cobradoHoy -= entry.montoPagado || 0;
+      cobroDeudaHoy -= aplicadoDeuda;
+      if(entry.formaPago==='efectivo') efectivoHoy -= entry.montoPagado || 0;
+      if(entry.formaPago==='transferencia') transferenciaHoy -= entry.montoPagado || 0;
+      if(entry.formaPago==='entregado') entregadoHoy -= entry.montoPagado || 0;
+    }
   }
 }
 
@@ -2941,8 +3014,11 @@ function copiarBoleta(){
 }
 
 function formatearMovimiento(entry){
-  const etiquetaPago=entry.formaPago==='efectivo'?'Efectivo':entry.formaPago==='transferencia'?'Transferencia':entry.formaPago==='transferencia_pendiente'?'Transferencia pendiente':entry.formaPago==='entregado'?'Parcial / Fiado':'';
-  if(entry.tipo==='pago') return `Pago de $${formatMoney(entry.montoPagado||0)} · ${isoAFechaLabel(entry.fechaISO)} ${entry.hora||''}`;
+  const etiquetaPago=entry.formaPago==='efectivo'?'Efectivo':entry.formaPago==='transferencia'?'Transferencia':entry.formaPago==='transferencia_pendiente'?'Transferencia pendiente':entry.formaPago==='entregado'?(Number(entry.montoPagado||0)>0?'Pago parcial':'Fiado'):'';
+  if(entry.tipo==='pago'){
+    const forma=entry.formaPago==='transferencia'?'Transferencia':entry.formaPago==='efectivo'?'Efectivo':'';
+    return `Pago de deuda $${formatMoney(entry.montoPagado||0)}${forma?' · '+forma:''} · ${isoAFechaLabel(entry.fechaISO)} ${entry.hora||''}`;
+  }
   if(entry.tipo==='no_compra') return `No compró · ${isoAFechaLabel(entry.fechaISO)} ${entry.hora||''}`;
   const items=[];
   if(entry.b20) items.push(`${entry.b20} bidón 20L`);
@@ -2965,8 +3041,15 @@ function abrirEditarMovimiento(clienteId,entryId){
   const c=clientes.find(x=>x.id===clienteId); if(!c) return;
   const entry=c.historial.find(h=>h.id===entryId); if(!entry) return;
   movimientoEditando={clienteId,entryId};
-  const compra=entry.tipo==='compra';
+  const tipo=entry.tipo || 'compra';
+  const compra=tipo==='compra';
+  const pago=tipo==='pago';
   document.getElementById('camposEditCompra').style.display=compra?'block':'none';
+  document.getElementById('camposEditPago').style.display=pago?'block':'none';
+  document.getElementById('btnEditCompro').className='btn'+(compra?'':' outline');
+  document.getElementById('btnEditNoCompro').className='btn'+(tipo==='no_compra'?'':' outline');
+  document.getElementById('btnEditPago').className='btn'+(pago?'':' outline');
+  document.getElementById('camposEditCompra').dataset.tipo=tipo;
   document.getElementById('editB20').value=entry.b20||0;
   document.getElementById('editB10').value=entry.b10||0;
   document.getElementById('editDisp').value=entry.disp||0;
@@ -2977,63 +3060,102 @@ function abrirEditarMovimiento(clienteId,entryId){
   if(eSoda) eSoda.value=entry.envSoda||0;
   document.getElementById('editEnvases').value=entry.envases||((entry.envB20||0)+(entry.envB10||0)+(entry.envSoda||0));
   document.getElementById('editFormaPago').value=entry.formaPago||'efectivo';
-  toggleEditMontoEntregado(); // CORRECCIÓN: mostrar/ocultar según el valor cargado
+  const pagoMonto=document.getElementById('editPagoMonto');
+  const pagoForma=document.getElementById('editPagoForma');
+  if(pagoMonto) pagoMonto.value=entry.montoPagado||0;
+  if(pagoForma) pagoForma.value=entry.formaPago==='transferencia'?'transferencia':'efectivo';
+  toggleEditMontoEntregado();
   abrirModal('modalEditarMov');
 }
 
 function setTipoEdicion(tipo){
-  const esCompra = tipo === 'compra';
-  document.getElementById('camposEditCompra').style.display = esCompra ? 'block' : 'none';
-  document.getElementById('btnEditCompro').className = 'btn' + (esCompra ? '' : ' outline');
-  document.getElementById('btnEditNoCompro').className = 'btn' + (esCompra ? ' outline' : '');
-  document.getElementById('camposEditCompra').dataset.tipo = tipo;
+  const esCompra=tipo==='compra';
+  const esPago=tipo==='pago';
+  document.getElementById('camposEditCompra').style.display=esCompra?'block':'none';
+  document.getElementById('camposEditPago').style.display=esPago?'block':'none';
+  document.getElementById('btnEditCompro').className='btn'+(esCompra?'':' outline');
+  document.getElementById('btnEditNoCompro').className='btn'+(tipo==='no_compra'?'':' outline');
+  document.getElementById('btnEditPago').className='btn'+(esPago?'':' outline');
+  document.getElementById('camposEditCompra').dataset.tipo=tipo;
 }
 
 function toggleEditMontoEntregado(){
-  const forma = document.getElementById('editFormaPago').value;
-  document.getElementById('editMontoEntregadoWrap').style.display = forma === 'entregado' ? 'block' : 'none';
+  const forma=document.getElementById('editFormaPago').value;
+  document.getElementById('editMontoEntregadoWrap').style.display=forma==='entregado'?'block':'none';
 }
 
 function guardarEdicionMovimiento(){
   if(!movimientoEditando) return;
   const c=clientes.find(x=>x.id===movimientoEditando.clienteId); if(!c) return;
   const entry=c.historial.find(h=>h.id===movimientoEditando.entryId); if(!entry) return;
-  const viejo=entry.tipo==='compra'?{b20:entry.b20||0,b10:entry.b10||0,disp:entry.disp||0,soda:entry.soda||0,envB20:entry.envB20||0,envB10:entry.envB10||0,envSoda:entry.envSoda||0}:{b20:0,b10:0,disp:0,soda:0,envB20:0,envB10:0,envSoda:0};
+
+  // Primero quitamos el efecto del movimiento viejo para recalcular todo desde cero.
+  const viejo=entry.tipo==='compra'
+    ? {b20:entry.b20||0,b10:entry.b10||0,disp:entry.disp||0,soda:entry.soda||0,envB20:entry.envB20||0,envB10:entry.envB10||0,envSoda:entry.envSoda||0}
+    : {b20:0,b10:0,disp:0,soda:0,envB20:0,envB10:0,envSoda:0};
   revertirEfectoMovimiento(c,entry);
-  const nuevoTipo=document.getElementById('camposEditCompra').dataset.tipo;
+
+  const nuevoTipo=document.getElementById('camposEditCompra').dataset.tipo || entry.tipo;
   entry.tipo=nuevoTipo;
+
+  if(nuevoTipo==='pago'){
+    const monto=Math.max(0,parseFloat(document.getElementById('editPagoMonto').value)||0);
+    const forma=document.getElementById('editPagoForma').value==='transferencia'?'transferencia':'efectivo';
+    const deudaAntes=Math.max(0,Number(c.saldo||0));
+    const aplicado=Math.min(monto,deudaAntes);
+    const excedente=Math.max(0,monto-aplicado);
+    entry.montoPagado=monto;
+    entry.montoAplicadoDeuda=aplicado;
+    entry.montoSaldoFavor=excedente;
+    entry.formaPago=forma;
+    entry.origen=entry.origen||'pago_deuda';
+    aplicarEfectoMovimiento(c,entry);
+    syncActualizarMovimiento(entry,c.id); syncCliente(c);
+    recalcularDeudaGeneradaHoy();
+    syncResumenDiario();
+    guardarEstado({forzarSync:true});
+    movimientoEditando=null; cerrarModal('modalEditarMov'); renderDetalle(c); renderTodo();
+    mostrarToast('Pago corregido correctamente.','success');
+    return;
+  }
+
   let nuevo={b20:0,b10:0,disp:0,soda:0,envB20:0,envB10:0,envSoda:0};
   if(nuevoTipo==='compra'){
     const b20=parseInt(document.getElementById('editB20').value)||0;
-  const b10=parseInt(document.getElementById('editB10').value)||0;
-const disp=parseInt(document.getElementById('editDisp').value)||0;
-const soda=parseInt(document.getElementById('editSoda').value)||0;
-const e20El=document.getElementById('editEnvB20'), e10El=document.getElementById('editEnvB10'), eSodaEl=document.getElementById('editEnvSoda');
-const envB20=e20El?parseInt(e20El.value)||0:0;
-const envB10=e10El?parseInt(e10El.value)||0:0;
-const envSoda=eSodaEl?parseInt(eSodaEl.value)||0:0;
-const envases=envB20+envB10+envSoda;
-const formaPago=document.getElementById('editFormaPago').value;
-const precios = obtenerPreciosCliente(c, entry.fechaISO || todayISO());
-const costo=b20*precios.b20+b10*precios.b10+disp*precios.disp+soda*precios.soda;
-let montoPagado=0;
-if(formaPago==='efectivo'||formaPago==='transferencia') montoPagado=costo;
-else if(formaPago==='entregado') montoPagado=parseFloat(document.getElementById('editMontoEntregado').value)||0;
-entry.b20=b20;entry.b10=b10;entry.disp=disp;entry.soda=soda;entry.bidones=b20+b10;entry.envB20=envB20;entry.envB10=envB10;entry.envSoda=envSoda;entry.envases=envases;
-entry.costo=costo;entry.formaPago=formaPago;entry.montoPagado=montoPagado;entry.transferenciaConfirmada=formaPago==='transferencia_pendiente'?false:undefined;entry.preciosAplicados=precios;
-nuevo={b20,b10,disp,soda,envB20,envB10,envSoda};
-}
-if(movimientoPerteneceAlRepartoActual(entry)){
-stockCamion.b20=Math.max(0,stockCamion.b20+viejo.b20-nuevo.b20);
-stockCamion.b10=Math.max(0,stockCamion.b10+viejo.b10-nuevo.b10);
-stockCamion.disp=Math.max(0,stockCamion.disp+viejo.disp-nuevo.disp);
-stockCamion.soda=Math.max(0,stockCamion.soda+viejo.soda-nuevo.soda);
-stockCamion.vaciosB20=Math.max(0,(stockCamion.vaciosB20||0)+nuevo.envB20-viejo.envB20);
-stockCamion.vaciosB10=Math.max(0,(stockCamion.vaciosB10||0)+nuevo.envB10-viejo.envB10);
-stockCamion.vaciosSoda=Math.max(0,(stockCamion.vaciosSoda||0)+nuevo.envSoda-viejo.envSoda);
-}
-aplicarEfectoMovimiento(c,entry);syncActualizarMovimiento(entry,c.id);syncCliente(c);syncStock();
-movimientoEditando=null;cerrarModal('modalEditarMov');renderDetalle(c);renderTodo();
+    const b10=parseInt(document.getElementById('editB10').value)||0;
+    const disp=parseInt(document.getElementById('editDisp').value)||0;
+    const soda=parseInt(document.getElementById('editSoda').value)||0;
+    const e20El=document.getElementById('editEnvB20'), e10El=document.getElementById('editEnvB10'), eSodaEl=document.getElementById('editEnvSoda');
+    const envB20=e20El?parseInt(e20El.value)||0:0;
+    const envB10=e10El?parseInt(e10El.value)||0:0;
+    const envSoda=eSodaEl?parseInt(eSodaEl.value)||0:0;
+    const envases=envB20+envB10+envSoda;
+    const formaPago=document.getElementById('editFormaPago').value;
+    const precios=obtenerPreciosCliente(c,entry.fechaISO||todayISO());
+    const costo=b20*precios.b20+b10*precios.b10+disp*precios.disp+soda*precios.soda;
+    let montoPagado=0;
+    if(formaPago==='efectivo'||formaPago==='transferencia') montoPagado=costo;
+    else if(formaPago==='entregado') montoPagado=parseFloat(document.getElementById('editMontoEntregado').value)||0;
+    entry.b20=b20;entry.b10=b10;entry.disp=disp;entry.soda=soda;entry.bidones=b20+b10;entry.envB20=envB20;entry.envB10=envB10;entry.envSoda=envSoda;entry.envases=envases;
+    entry.costo=costo;entry.formaPago=formaPago;entry.montoPagado=montoPagado;entry.transferenciaConfirmada=formaPago==='transferencia_pendiente'?false:undefined;entry.preciosAplicados=precios;
+    nuevo={b20,b10,disp,soda,envB20,envB10,envSoda};
+  }
+
+  if(movimientoPerteneceAlRepartoActual(entry)){
+    stockCamion.b20=Math.max(0,stockCamion.b20+viejo.b20-nuevo.b20);
+    stockCamion.b10=Math.max(0,stockCamion.b10+viejo.b10-nuevo.b10);
+    stockCamion.disp=Math.max(0,stockCamion.disp+viejo.disp-nuevo.disp);
+    stockCamion.soda=Math.max(0,stockCamion.soda+viejo.soda-nuevo.soda);
+    stockCamion.vaciosB20=Math.max(0,(stockCamion.vaciosB20||0)+nuevo.envB20-viejo.envB20);
+    stockCamion.vaciosB10=Math.max(0,(stockCamion.vaciosB10||0)+nuevo.envB10-viejo.envB10);
+    stockCamion.vaciosSoda=Math.max(0,(stockCamion.vaciosSoda||0)+nuevo.envSoda-viejo.envSoda);
+  }
+  aplicarEfectoMovimiento(c,entry);
+  syncActualizarMovimiento(entry,c.id);syncCliente(c);syncStock();
+  recalcularDeudaGeneradaHoy();
+  syncResumenDiario();
+  guardarEstado({forzarSync:true});
+  movimientoEditando=null;cerrarModal('modalEditarMov');renderDetalle(c);renderTodo();
 }
 
 // ---------- ANULAR VENTA (deshacer del todo) ----------
